@@ -1,628 +1,575 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, CheckCircle, RefreshCw, Award, BookOpen, User, School, Mail, PlayCircle, Menu } from 'lucide-react';
-
-// --- DATA SOAL ---
-const QUESTIONS = [
-  // --- UNIT 1: BILANGAN ---
-  {
-    id: 1,
-    category: "Bilangan & Operasi",
-    type: "single",
-    question: "Hitunglah hasil dari operasi berikut: 8 + (-12)",
-    options: [
-      { text: "20", isCorrect: false },
-      { text: "4", isCorrect: false },
-      { text: "-4", isCorrect: true },
-      { text: "-20", isCorrect: false }
-    ]
-  },
-  {
-    id: 2,
-    category: "Bilangan & Operasi",
-    type: "complex",
-    question: "Manakah dari pernyataan berikut yang BENAR mengenai KPK (Kelipatan Persekutuan Terkecil) dan FPB (Faktor Persekutuan Terbesar)? (Pilih lebih dari satu)",
-    options: [
-      { text: "KPK dari 6 dan 10 adalah 30", isCorrect: true },
-      { text: "FPB dari 24 dan 40 adalah 8", isCorrect: true },
-      { text: "KPK dari 6 dan 10 adalah 60", isCorrect: false },
-      { text: "FPB dari 24 dan 40 adalah 4", isCorrect: false }
-    ]
-  },
-  {
-    id: 3,
-    category: "Bilangan & Operasi",
-    type: "single",
-    question: "Berapakah hasil dari ∛125 - ∛27 ? (Akar pangkat tiga dari 125 dikurang akar pangkat tiga dari 27)",
-    options: [
-      { text: "2", isCorrect: true },
-      { text: "3", isCorrect: false },
-      { text: "5", isCorrect: false },
-      { text: "8", isCorrect: false }
-    ]
-  },
-  {
-    id: 4,
-    category: "Bilangan & Operasi",
-    type: "single",
-    question: "Sebuah bilangan 3*58 memiliki satu digit yang hilang (*). Agar bilangan tersebut habis dibagi 3, angka berapakah yang mungkin menggantikan *?",
-    options: [
-      { text: "1", isCorrect: false },
-      { text: "2", isCorrect: true },
-      { text: "3", isCorrect: false },
-      { text: "4", isCorrect: false }
-    ]
-  },
-  {
-    id: 5,
-    category: "Bilangan & Operasi",
-    type: "single",
-    question: "Hasil kali dua bilangan bulat adalah -24. Jumlah kedua bilangan tersebut adalah 5. Berapakah kedua bilangan itu?",
-    options: [
-      { text: "8 dan -3", isCorrect: true },
-      { text: "-8 dan 3", isCorrect: false },
-      { text: "6 dan -4", isCorrect: false },
-      { text: "12 dan -2", isCorrect: false }
-    ]
-  },
-  {
-    id: 6,
-    category: "Bilangan & Operasi",
-    type: "complex",
-    question: "Diketahui pola bilangan kuadrat: 2² = 4, 4² = 16, 8² = 64. Manakah pernyataan yang benar tentang 32²? (Pilih lebih dari satu)",
-    options: [
-      { text: "Nilainya adalah 1024", isCorrect: true },
-      { text: "Nilainya sama dengan (2^5)²", isCorrect: true },
-      { text: "Nilainya adalah 900", isCorrect: false },
-      { text: "Nilainya lebih kecil dari 30²", isCorrect: false }
-    ]
-  },
-
-  // --- UNIT 2: ALJABAR ---
-  {
-    id: 7,
-    category: "Aljabar",
-    type: "single",
-    question: "Jika p = 3 dan q = 10, berapakah nilai dari ekspresi 5q - 1?",
-    options: [
-      { text: "14", isCorrect: false },
-      { text: "49", isCorrect: true },
-      { text: "51", isCorrect: false },
-      { text: "29", isCorrect: false }
-    ]
-  },
-  {
-    id: 8,
-    category: "Aljabar",
-    type: "single",
-    question: "Sederhanakan bentuk aljabar berikut: 4ab - 3ba + 7rs - 7sr",
-    options: [
-      { text: "ab", isCorrect: true },
-      { text: "7ab + 14rs", isCorrect: false },
-      { text: "ab + 14rs", isCorrect: false },
-      { text: "7ab", isCorrect: false }
-    ]
-  },
-  {
-    id: 9,
-    category: "Aljabar",
-    type: "complex",
-    question: "Manakah penyederhanaan yang BENAR? (Pilih lebih dari satu)",
-    options: [
-      { text: "9p + p = 10p", isCorrect: true },
-      { text: "3x + 9 = 12x", isCorrect: false },
-      { text: "5(p - 2) = 5p - 10", isCorrect: true },
-      { text: "6p - 5p = 1", isCorrect: false }
-    ]
-  },
-  {
-    id: 10,
-    category: "Aljabar",
-    type: "single",
-    question: "Selesaikan persamaan berikut: x - 8 = 22",
-    options: [
-      { text: "x = 14", isCorrect: false },
-      { text: "x = 30", isCorrect: true },
-      { text: "x = 176", isCorrect: false },
-      { text: "x = 2.75", isCorrect: false }
-    ]
-  },
-  {
-    id: 11,
-    category: "Aljabar",
-    type: "single",
-    question: "Untuk pertidaksamaan n > 8, manakah bilangan bulat TERKECIL yang memenuhi?",
-    options: [
-      { text: "8", isCorrect: false },
-      { text: "9", isCorrect: true },
-      { text: "7", isCorrect: false },
-      { text: "8.1", isCorrect: false }
-    ]
-  },
-  {
-    id: 12,
-    category: "Aljabar",
-    type: "single",
-    question: "Sederhanakan pecahan aljabar berikut: 3x/4 + 7x/12",
-    options: [
-      { text: "10x/16", isCorrect: false },
-      { text: "4x/3", isCorrect: true },
-      { text: "10x/12", isCorrect: false },
-      { text: "x", isCorrect: false }
-    ]
-  },
-  {
-    id: 13,
-    category: "Aljabar",
-    type: "complex",
-    question: "Manakah dari berikut ini yang merupakan ekspresi (bukan persamaan)? (Pilih lebih dari satu)",
-    options: [
-      { text: "3x + 9", isCorrect: true },
-      { text: "3x + 9 = 12", isCorrect: false },
-      { text: "4(d + 3r)", isCorrect: true },
-      { text: "x = 5", isCorrect: false }
-    ]
-  },
-  {
-    id: 14,
-    category: "Aljabar",
-    type: "single",
-    question: "Sebuah segitiga sama kaki memiliki panjang sisi yang sama sebesar (4x - 7) cm. Jika salah satu sisi tersebut panjangnya 25 cm, berapakah nilai x?",
-    options: [
-      { text: "4.5", isCorrect: false },
-      { text: "8", isCorrect: true },
-      { text: "32", isCorrect: false },
-      { text: "18", isCorrect: false }
-    ]
-  },
-
-  // --- UNIT 3: DESIMAL & PANGKAT ---
-  {
-    id: 15,
-    category: "Desimal & Nilai Tempat",
-    type: "single",
-    question: "Hitunglah: 35.8 × 10⁴",
-    options: [
-      { text: "358.000", isCorrect: true },
-      { text: "3.580.000", isCorrect: false },
-      { text: "35.800", isCorrect: false },
-      { text: "0,00358", isCorrect: false }
-    ]
-  },
-  {
-    id: 16,
-    category: "Desimal & Nilai Tempat",
-    type: "single",
-    question: "Hitunglah: 3210 ÷ 10⁴",
-    options: [
-      { text: "32.100.000", isCorrect: false },
-      { text: "3,21", isCorrect: false },
-      { text: "0,321", isCorrect: true },
-      { text: "0,0321", isCorrect: false }
-    ]
-  },
-  {
-    id: 17,
-    category: "Desimal & Nilai Tempat",
-    type: "complex",
-    question: "Manakah pembulatan yang BENAR? (Pilih lebih dari satu)",
-    options: [
-      { text: "16,952 dibulatkan ke 2 desimal menjadi 16,95", isCorrect: true },
-      { text: "7,9986 dibulatkan ke 2 desimal menjadi 8,00", isCorrect: true },
-      { text: "813,0298 dibulatkan ke 3 desimal menjadi 813,029", isCorrect: false },
-      { text: "449,5678 dibulatkan ke 4 desimal menjadi 449,5680", isCorrect: false }
-    ]
-  },
-  {
-    id: 18,
-    category: "Desimal & Nilai Tempat",
-    type: "single",
-    question: "Tuliskan 10.000.000 sebagai bilangan berpangkat basis 10.",
-    options: [
-      { text: "10^6", isCorrect: false },
-      { text: "10^7", isCorrect: true },
-      { text: "10^8", isCorrect: false },
-      { text: "10^5", isCorrect: false }
-    ]
-  },
-  {
-    id: 19,
-    category: "Desimal & Nilai Tempat",
-    type: "complex",
-    question: "Manakah pernyataan yang benar tentang perpangkatan 10? (Pilih lebih dari satu)",
-    options: [
-      { text: "Membagi dengan 10² sama dengan menggeser koma desimal 2 langkah ke kiri", isCorrect: true },
-      { text: "54 × 10² = 5400", isCorrect: true },
-      { text: "10³ adalah seribu", isCorrect: true },
-      { text: "Mengalikan dengan 10³ membuat bilangan menjadi lebih kecil", isCorrect: false }
-    ]
-  },
-  {
-    id: 20,
-    category: "Desimal & Nilai Tempat",
-    type: "single",
-    question: "Bulatkan 813,02981 ke 3 tempat desimal.",
-    options: [
-      { text: "813,029", isCorrect: false },
-      { text: "813,030", isCorrect: true },
-      { text: "813,028", isCorrect: false },
-      { text: "813,03", isCorrect: false }
-    ]
-  }
-];
-
-export default function MathQuizApp() {
-  const [appState, setAppState] = useState('registration'); // 'registration', 'quiz', 'result'
-  const [studentInfo, setStudentInfo] = useState({
-    name: '',
-    className: '',
-    email: ''
-  });
-  
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState({}); 
-
-  // --- Handlers ---
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setStudentInfo(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const startQuiz = (e) => {
-    e.preventDefault();
-    if (studentInfo.name && studentInfo.className) {
-      setAppState('quiz');
-    } else {
-      // Custom Alert UI could be better for mobile, but alert is robust
-      alert("Mohon lengkapi Nama dan Kelas terlebih dahulu.");
-    }
-  };
-
-  const handleOptionSelect = (qId, optionIndex, type) => {
-    setUserAnswers(prev => {
-      const currentSelection = prev[qId] || [];
-      
-      if (type === 'single') {
-        return { ...prev, [qId]: [optionIndex] };
-      } else {
-        if (currentSelection.includes(optionIndex)) {
-          return { ...prev, [qId]: currentSelection.filter(i => i !== optionIndex) };
-        } else {
-          return { ...prev, [qId]: [...currentSelection, optionIndex] };
-        }
-      }
-    });
-  };
-
-  const calculateScore = () => {
-    let totalScore = 0;
-    let maxScore = QUESTIONS.length;
-    let categoryScores = {};
-
-    QUESTIONS.forEach(q => {
-      if (!categoryScores[q.category]) {
-        categoryScores[q.category] = { correct: 0, total: 0 };
-      }
-      categoryScores[q.category].total += 1;
-
-      const userAns = userAnswers[q.id] || [];
-      
-      let isCorrect = false;
-      if (q.type === 'single') {
-        if (userAns.length > 0 && q.options[userAns[0]].isCorrect) {
-          isCorrect = true;
-        }
-      } else {
-        const correctIndices = q.options.map((opt, idx) => opt.isCorrect ? idx : -1).filter(i => i !== -1);
-        const userIndices = userAns.sort();
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Matematika Interaktif</title>
+    <!-- Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Poppins untuk kesan lebih modern dan playful -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
         
-        const isAllCorrectSelected = correctIndices.every(i => userIndices.includes(i));
-        const isNoWrongSelected = userIndices.every(i => correctIndices.includes(i));
-        
-        if (isAllCorrectSelected && isNoWrongSelected && correctIndices.length === userIndices.length) {
-          isCorrect = true;
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-      }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
 
-      if (isCorrect) {
-        totalScore += 1;
-        categoryScores[q.category].correct += 1;
-      }
-    });
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
 
-    return { totalScore, maxScore, categoryScores };
-  };
+        .glass-input {
+            background: rgba(243, 244, 246, 0.8);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
 
-  const resetQuiz = () => {
-    setUserAnswers({});
-    setCurrentQuestionIndex(0);
-    setAppState('registration');
-    setStudentInfo({ name: '', className: '', email: '' });
-  };
-
-  // --- RENDERING ---
-
-  // 1. TAMPILAN REGISTRASI
-  if (appState === 'registration') {
-    return (
-      <div className="min-h-[100dvh] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-md flex flex-col">
-          <div className="text-center mb-6 md:mb-8">
-            <div className="bg-blue-100 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-7 h-7 md:w-8 md:h-8 text-blue-600" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Selamat Datang!</h1>
-            <p className="text-gray-500 text-sm md:text-base mt-2">Silakan isi data diri sebelum memulai kuis Matematika.</p>
-          </div>
-
-          <form onSubmit={startQuiz} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                {/* text-base prevents iOS zoom on focus */}
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={studentInfo.name}
-                  onChange={handleInputChange}
-                  className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-base"
-                  placeholder="Masukkan nama lengkap"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <School className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  name="className"
-                  required
-                  value={studentInfo.className}
-                  onChange={handleInputChange}
-                  className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-base"
-                  placeholder="Contoh: 7A"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email (Opsional)</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={studentInfo.email}
-                  onChange={handleInputChange}
-                  className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-base"
-                  placeholder="nama@sekolah.com"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-lg transition-all transform active:scale-95 shadow-md mt-6 text-base"
-            >
-              Mulai Mengerjakan
-              <PlayCircle className="ml-2 w-5 h-5" />
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. TAMPILAN HASIL
-  if (appState === 'result') {
-    const { totalScore, maxScore, categoryScores } = calculateScore();
-    const percentage = Math.round((totalScore / maxScore) * 100);
+        /* Gradient Text */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #4f46e5, #9333ea);
+        }
+    </style>
+</head>
+<body class="bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop')] bg-cover bg-center bg-fixed min-h-screen text-gray-800 antialiased selection:bg-indigo-200 selection:text-indigo-900">
     
-    const strengths = [];
-    const weaknesses = [];
-    
-    Object.keys(categoryScores).forEach(cat => {
-      const score = categoryScores[cat];
-      const catPercent = (score.correct / score.total) * 100;
-      if (catPercent >= 70) strengths.push(`${cat} (${Math.round(catPercent)}%)`);
-      else weaknesses.push(`${cat} (${Math.round(catPercent)}%)`);
-    });
+    <!-- Overlay Gradient agar teks tetap terbaca -->
+    <div class="fixed inset-0 bg-gradient-to-br from-indigo-900/90 via-purple-900/80 to-blue-900/90 z-0"></div>
 
-    return (
-      <div className="min-h-[100dvh] bg-gray-50 p-4 md:p-8 font-sans text-gray-800">
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-blue-600 p-6 text-white">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-center">Laporan Hasil Evaluasi</h1>
-            <div className="bg-blue-700 bg-opacity-30 rounded-lg p-4 mt-4 flex flex-col sm:flex-row justify-between items-center text-sm md:text-base gap-2 sm:gap-0">
-              <div className="text-center sm:text-left">
-                <p className="opacity-80 text-xs sm:text-sm">Nama Siswa</p>
-                <p className="font-bold text-lg">{studentInfo.name}</p>
-              </div>
-              <div className="text-center sm:text-right">
-                <p className="opacity-80 text-xs sm:text-sm">Kelas</p>
-                <p className="font-bold text-lg">{studentInfo.className}</p>
-              </div>
-            </div>
-            {studentInfo.email && (
-              <p className="text-center mt-3 text-xs opacity-70 break-all">Hasil dikirim ke: {studentInfo.email}</p>
-            )}
-          </div>
-          
-          <div className="p-6 md:p-8">
-            <div className="flex flex-col items-center justify-center mb-8">
-              <div className="relative w-28 h-28 md:w-32 md:h-32 flex items-center justify-center rounded-full border-4 border-blue-500 mb-4">
-                <span className="text-3xl md:text-4xl font-bold text-blue-600">{percentage}%</span>
-              </div>
-              <p className="text-lg md:text-xl font-semibold text-gray-700">Skor: {totalScore} / {maxScore}</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-8">
-              <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                <div className="flex items-center mb-2 text-green-700">
-                  <Award className="w-5 h-5 mr-2" />
-                  <h3 className="font-bold text-sm md:text-base">Perlu Dipertahankan</h3>
-                </div>
-                {strengths.length > 0 ? (
-                  <ul className="list-disc list-inside text-sm text-green-800 pl-1">
-                    {strengths.map(s => <li key={s}>{s}</li>)}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">Terus berlatih untuk meningkatkan semua area.</p>
-                )}
-              </div>
-
-              <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
-                <div className="flex items-center mb-2 text-orange-700">
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  <h3 className="font-bold text-sm md:text-base">Perlu Diperkuat</h3>
-                </div>
-                {weaknesses.length > 0 ? (
-                  <ul className="list-disc list-inside text-sm text-orange-800 pl-1">
-                    {weaknesses.map(w => <li key={w}>{w}</li>)}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">Kerja bagus! Pertahankan prestasi ini.</p>
-                )}
-              </div>
-            </div>
-
-            <button 
-              onClick={resetQuiz}
-              className="w-full flex items-center justify-center py-3.5 px-6 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors active:scale-[0.98]"
-            >
-              <RefreshCw className="w-5 h-5 mr-2" />
-              Selesai / Kerjakan Ulang
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. TAMPILAN KUIS (MAIN)
-  const currentQ = QUESTIONS[currentQuestionIndex];
-  const selectedOpts = userAnswers[currentQ.id] || [];
-  const progress = ((currentQuestionIndex + 1) / QUESTIONS.length) * 100;
-  
-  return (
-    <div className="min-h-[100dvh] bg-gray-100 p-3 md:p-8 font-sans text-gray-800">
-      <div className="max-w-3xl mx-auto flex flex-col min-h-full">
-        {/* Header / Info Siswa Mini */}
-        <div className="mb-4 md:mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-2">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">Kuis Matematika</h2>
-            <p className="text-gray-500 text-xs md:text-sm truncate max-w-[300px]">
-              Siswa: <span className="font-semibold text-gray-700">{studentInfo.name}</span> ({studentInfo.className})
-            </p>
-          </div>
-          <span className="text-blue-600 font-bold bg-blue-100 px-3 py-1 rounded-full text-xs md:text-sm w-fit self-start md:self-auto">
-            Soal {currentQuestionIndex + 1}/{QUESTIONS.length}
-          </span>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-300 rounded-full h-2 mb-4 md:mb-6">
-          <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
-        </div>
-
-        {/* Card Soal */}
-        <div className="bg-white rounded-xl shadow-md p-4 md:p-8 flex-grow flex flex-col">
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
-              <span className={`inline-block px-2 py-1 text-[10px] md:text-xs font-semibold rounded uppercase tracking-wide ${
-                currentQ.type === 'complex' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-              }`}>
-                {currentQ.type === 'complex' ? 'Pilihan Ganda Kompleks' : 'Pilihan Ganda Tunggal'}
-              </span>
-              <span className="inline-block px-2 py-1 text-[10px] md:text-xs font-semibold bg-gray-100 text-gray-600 rounded uppercase tracking-wide">
-                {currentQ.category}
-              </span>
-            </div>
-            {currentQ.type === 'complex' && (
-               <p className="text-xs text-purple-600 mt-1 italic">* Pilih lebih dari satu jawaban</p>
-            )}
-          </div>
-
-          <h3 className="text-lg md:text-xl font-medium mb-6 leading-relaxed">
-            {currentQ.question}
-          </h3>
-
-          <div className="space-y-3 flex-grow">
-            {currentQ.options.map((opt, idx) => {
-              const isSelected = selectedOpts.includes(idx);
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleOptionSelect(currentQ.id, idx, currentQ.type)}
-                  className={`w-full text-left p-3 md:p-4 rounded-lg border-2 transition-all flex items-start md:items-center group active:scale-[0.99] touch-manipulation ${
-                    isSelected 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className={`mt-0.5 md:mt-0 w-5 h-5 md:w-6 md:h-6 flex-shrink-0 rounded flex items-center justify-center mr-3 md:mr-4 border ${
-                    currentQ.type === 'single' ? 'rounded-full' : 'rounded-md'
-                  } ${
-                    isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-400 bg-white'
-                  }`}>
-                    {isSelected && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full" />}
-                  </div>
-                  <span className={`text-sm md:text-base ${isSelected ? 'text-blue-900 font-medium' : 'text-gray-700'}`}>
-                    {opt.text}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Navigation - Stack on mobile, row on desktop */}
-        <div className="flex flex-col-reverse sm:flex-row justify-between mt-6 md:mt-8 gap-3 sm:gap-0 pb-4 md:pb-0">
-          <button
-            onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestionIndex === 0}
-            className={`w-full sm:w-auto flex items-center justify-center px-6 py-3.5 rounded-lg font-medium transition-colors ${
-              currentQuestionIndex === 0 
-                ? 'text-gray-400 cursor-not-allowed bg-gray-200' 
-                : 'text-gray-700 bg-white hover:bg-gray-50 shadow-sm border border-gray-200'
-            }`}
-          >
-            <ChevronLeft className="w-5 h-5 mr-2" />
-            Sebelumnya
-          </button>
-
-          {currentQuestionIndex === QUESTIONS.length - 1 ? (
-            <button
-              onClick={() => setAppState('result')}
-              className="w-full sm:w-auto flex items-center justify-center px-8 py-3.5 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg transition-transform active:scale-[0.98]"
-            >
-              Selesai & Lihat Skor
-              <CheckCircle className="w-5 h-5 ml-2" />
-            </button>
-          ) : (
-            <button
-              onClick={() => setCurrentQuestionIndex(prev => Math.min(QUESTIONS.length - 1, prev + 1))}
-              className="w-full sm:w-auto flex items-center justify-center px-6 py-3.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 shadow-md transition-colors active:scale-[0.98]"
-            >
-              Selanjutnya
-              <ChevronRight className="w-5 h-5 ml-2" />
-            </button>
-          )}
-        </div>
-      </div>
+    <!-- Container Utama -->
+    <div id="app" class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- Konten akan di-render di sini oleh JavaScript -->
     </div>
-  );
-}
+
+    <script>
+        // --- DATA SOAL ---
+        const QUESTIONS = [
+            // --- UNIT 1 ---
+            {
+                id: 1, category: "Bilangan & Operasi", type: "single",
+                question: "Hitunglah hasil dari operasi berikut: 8 + (-12)",
+                options: [
+                    { text: "20", isCorrect: false },
+                    { text: "4", isCorrect: false },
+                    { text: "-4", isCorrect: true },
+                    { text: "-20", isCorrect: false }
+                ]
+            },
+            {
+                id: 2, category: "Bilangan & Operasi", type: "complex",
+                question: "Manakah dari pernyataan berikut yang BENAR mengenai KPK dan FPB? (Pilih lebih dari satu)",
+                options: [
+                    { text: "KPK dari 6 dan 10 adalah 30", isCorrect: true },
+                    { text: "FPB dari 24 dan 40 adalah 8", isCorrect: true },
+                    { text: "KPK dari 6 dan 10 adalah 60", isCorrect: false },
+                    { text: "FPB dari 24 dan 40 adalah 4", isCorrect: false }
+                ]
+            },
+            {
+                id: 3, category: "Bilangan & Operasi", type: "single",
+                question: "Berapakah hasil dari ∛125 - ∛27 ?",
+                options: [
+                    { text: "2", isCorrect: true },
+                    { text: "3", isCorrect: false },
+                    { text: "5", isCorrect: false },
+                    { text: "8", isCorrect: false }
+                ]
+            },
+            {
+                id: 4, category: "Bilangan & Operasi", type: "single",
+                question: "Sebuah bilangan 3*58 habis dibagi 3. Angka berapakah yang mungkin menggantikan *?",
+                options: [
+                    { text: "1", isCorrect: false },
+                    { text: "2", isCorrect: true },
+                    { text: "3", isCorrect: false },
+                    { text: "4", isCorrect: false }
+                ]
+            },
+            {
+                id: 5, category: "Bilangan & Operasi", type: "single",
+                question: "Hasil kali dua bilangan bulat adalah -24. Jumlahnya adalah 5. Berapakah bilangan itu?",
+                options: [
+                    { text: "8 dan -3", isCorrect: true },
+                    { text: "-8 dan 3", isCorrect: false },
+                    { text: "6 dan -4", isCorrect: false },
+                    { text: "12 dan -2", isCorrect: false }
+                ]
+            },
+            {
+                id: 6, category: "Bilangan & Operasi", type: "complex",
+                question: "Diketahui 2²=4, 4²=16, 8²=64. Manakah pernyataan benar tentang 32²? (Pilih > 1)",
+                options: [
+                    { text: "Nilainya adalah 1024", isCorrect: true },
+                    { text: "Nilainya sama dengan (2^5)²", isCorrect: true },
+                    { text: "Nilainya adalah 900", isCorrect: false },
+                    { text: "Nilainya lebih kecil dari 30²", isCorrect: false }
+                ]
+            },
+            // --- UNIT 2 ---
+            {
+                id: 7, category: "Aljabar", type: "single",
+                question: "Jika p = 3 dan q = 10, berapakah nilai 5q - 1?",
+                options: [
+                    { text: "14", isCorrect: false }, { text: "49", isCorrect: true },
+                    { text: "51", isCorrect: false }, { text: "29", isCorrect: false }
+                ]
+            },
+            {
+                id: 8, category: "Aljabar", type: "single",
+                question: "Sederhanakan: 4ab - 3ba + 7rs - 7sr",
+                options: [
+                    { text: "ab", isCorrect: true }, { text: "7ab + 14rs", isCorrect: false },
+                    { text: "ab + 14rs", isCorrect: false }, { text: "7ab", isCorrect: false }
+                ]
+            },
+            {
+                id: 9, category: "Aljabar", type: "complex",
+                question: "Manakah penyederhanaan yang BENAR? (Pilih > 1)",
+                options: [
+                    { text: "9p + p = 10p", isCorrect: true }, { text: "3x + 9 = 12x", isCorrect: false },
+                    { text: "5(p - 2) = 5p - 10", isCorrect: true }, { text: "6p - 5p = 1", isCorrect: false }
+                ]
+            },
+            {
+                id: 10, category: "Aljabar", type: "single",
+                question: "Selesaikan persamaan: x - 8 = 22",
+                options: [
+                    { text: "x = 14", isCorrect: false }, { text: "x = 30", isCorrect: true },
+                    { text: "x = 176", isCorrect: false }, { text: "x = 2.75", isCorrect: false }
+                ]
+            },
+            {
+                id: 11, category: "Aljabar", type: "single",
+                question: "Untuk n > 8, bilangan bulat TERKECIL yang memenuhi adalah?",
+                options: [
+                    { text: "8", isCorrect: false }, { text: "9", isCorrect: true },
+                    { text: "7", isCorrect: false }, { text: "8.1", isCorrect: false }
+                ]
+            },
+            {
+                id: 12, category: "Aljabar", type: "single",
+                question: "Sederhanakan pecahan: 3x/4 + 7x/12",
+                options: [
+                    { text: "10x/16", isCorrect: false }, { text: "4x/3", isCorrect: true },
+                    { text: "10x/12", isCorrect: false }, { text: "x", isCorrect: false }
+                ]
+            },
+            {
+                id: 13, category: "Aljabar", type: "complex",
+                question: "Manakah yang merupakan EKSPRESI (bukan persamaan)? (Pilih > 1)",
+                options: [
+                    { text: "3x + 9", isCorrect: true }, { text: "3x + 9 = 12", isCorrect: false },
+                    { text: "4(d + 3r)", isCorrect: true }, { text: "x = 5", isCorrect: false }
+                ]
+            },
+            {
+                id: 14, category: "Aljabar", type: "single",
+                question: "Segitiga sama kaki sisinya (4x - 7) cm. Jika panjangnya 25 cm, berapa x?",
+                options: [
+                    { text: "4.5", isCorrect: false }, { text: "8", isCorrect: true },
+                    { text: "32", isCorrect: false }, { text: "18", isCorrect: false }
+                ]
+            },
+            // --- UNIT 3 ---
+            {
+                id: 15, category: "Desimal & Nilai Tempat", type: "single",
+                question: "Hitunglah: 35.8 × 10⁴",
+                options: [
+                    { text: "358.000", isCorrect: true }, { text: "3.580.000", isCorrect: false },
+                    { text: "35.800", isCorrect: false }, { text: "0,00358", isCorrect: false }
+                ]
+            },
+            {
+                id: 16, category: "Desimal & Nilai Tempat", type: "single",
+                question: "Hitunglah: 3210 ÷ 10⁴",
+                options: [
+                    { text: "32.100.000", isCorrect: false }, { text: "3,21", isCorrect: false },
+                    { text: "0,321", isCorrect: true }, { text: "0,0321", isCorrect: false }
+                ]
+            },
+            {
+                id: 17, category: "Desimal & Nilai Tempat", type: "complex",
+                question: "Manakah pembulatan yang BENAR? (Pilih > 1)",
+                options: [
+                    { text: "16,952 (2 desimal) = 16,95", isCorrect: true }, { text: "7,9986 (2 desimal) = 8,00", isCorrect: true },
+                    { text: "813,0298 (3 desimal) = 813,029", isCorrect: false }, { text: "449,5678 (4 desimal) = 449,5680", isCorrect: false }
+                ]
+            },
+            {
+                id: 18, category: "Desimal & Nilai Tempat", type: "single",
+                question: "Tuliskan 10.000.000 sebagai bilangan berpangkat basis 10.",
+                options: [
+                    { text: "10^6", isCorrect: false }, { text: "10^7", isCorrect: true },
+                    { text: "10^8", isCorrect: false }, { text: "10^5", isCorrect: false }
+                ]
+            },
+            {
+                id: 19, category: "Desimal & Nilai Tempat", type: "complex",
+                question: "Manakah pernyataan BENAR tentang perpangkatan 10? (Pilih > 1)",
+                options: [
+                    { text: "Membagi dengan 10² = geser koma 2 kiri", isCorrect: true },
+                    { text: "54 × 10² = 5400", isCorrect: true },
+                    { text: "10³ adalah seribu", isCorrect: true },
+                    { text: "Mengalikan dengan 10³ bilangan jadi lebih kecil", isCorrect: false }
+                ]
+            },
+            {
+                id: 20, category: "Desimal & Nilai Tempat", type: "single",
+                question: "Bulatkan 813,02981 ke 3 tempat desimal.",
+                options: [
+                    { text: "813,029", isCorrect: false }, { text: "813,030", isCorrect: true },
+                    { text: "813,028", isCorrect: false }, { text: "813,03", isCorrect: false }
+                ]
+            }
+        ];
+
+        // --- STATE MANAJEMEN ---
+        let state = {
+            view: 'registration', // 'registration', 'quiz', 'result'
+            student: { name: '', class: '', email: '' },
+            qIndex: 0,
+            answers: {} // { 1: [0], 2: [0, 2] }
+        };
+
+        const app = document.getElementById('app');
+
+        // --- FUNGSI UTAMA ---
+        function render() {
+            // Animasi transisi konten
+            app.innerHTML = ''; 
+            
+            if (state.view === 'registration') {
+                renderRegistration();
+            } else if (state.view === 'quiz') {
+                renderQuiz();
+            } else if (state.view === 'result') {
+                renderResult();
+            }
+            
+            // Render Icons
+            lucide.createIcons();
+        }
+
+        // 1. TAMPILAN REGISTRASI (EYE-CATCHING)
+        function renderRegistration() {
+            app.innerHTML = `
+                <div class="animate-fade-in w-full max-w-md">
+                    <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden">
+                        <!-- Dekorasi Background -->
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-200 rounded-full blur-3xl opacity-50"></div>
+                        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-200 rounded-full blur-3xl opacity-50"></div>
+
+                        <div class="text-center mb-10 relative z-10">
+                            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
+                                <i data-lucide="book-open" class="w-10 h-10 text-white"></i>
+                            </div>
+                            <h1 class="text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
+                            <p class="text-gray-500">Siap menguji kemampuan matematikamu?</p>
+                        </div>
+
+                        <form onsubmit="handleStart(event)" class="space-y-5 relative z-10">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2 ml-1">Nama Lengkap</label>
+                                <input type="text" id="inputName" required class="w-full p-4 rounded-xl border-0 glass-input outline-none font-medium text-gray-700 placeholder-gray-400" placeholder="Ketik namamu di sini..." value="${state.student.name}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2 ml-1">Kelas</label>
+                                <input type="text" id="inputClass" required class="w-full p-4 rounded-xl border-0 glass-input outline-none font-medium text-gray-700 placeholder-gray-400" placeholder="Contoh: 7A" value="${state.student.class}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2 ml-1">Email (Opsional)</label>
+                                <input type="email" id="inputEmail" class="w-full p-4 rounded-xl border-0 glass-input outline-none font-medium text-gray-700 placeholder-gray-400" placeholder="emailmu@sekolah.com" value="${state.student.email}">
+                            </div>
+                            
+                            <button type="submit" class="w-full group relative flex items-center justify-center bg-gray-900 text-white font-bold py-4 px-6 rounded-xl mt-8 shadow-lg overflow-hidden transition-all hover:shadow-indigo-500/30 hover:-translate-y-1">
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600 opacity-100 group-hover:opacity-90 transition-opacity"></div>
+                                <span class="relative flex items-center">
+                                    Mulai Mengerjakan <i data-lucide="arrow-right" class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                    <p class="text-center text-white/60 text-sm mt-6">© 2025 Math Quiz App. Dikembangkan dengan Gemini AI oleh Abdul Rahman, S.Pd., M.Pd.</p>
+                </div>
+            `;
+        }
+
+        function handleStart(e) {
+            e.preventDefault();
+            const name = document.getElementById('inputName').value;
+            const className = document.getElementById('inputClass').value;
+            const email = document.getElementById('inputEmail').value;
+
+            if (name && className) {
+                state.student = { name, class: className, email };
+                state.view = 'quiz';
+                render();
+            }
+        }
+
+        // 2. TAMPILAN KUIS (EYE-CATCHING)
+        function renderQuiz() {
+            const q = QUESTIONS[state.qIndex];
+            const userAns = state.answers[q.id] || [];
+            const progress = ((state.qIndex + 1) / QUESTIONS.length) * 100;
+
+            const optionsHtml = q.options.map((opt, idx) => {
+                const isSelected = userAns.includes(idx);
+                // Styles untuk pilihan jawaban
+                const containerClass = isSelected 
+                    ? 'border-indigo-500 bg-indigo-50/80 shadow-md transform scale-[1.01]' 
+                    : 'border-transparent bg-gray-50 hover:bg-white hover:border-gray-200 hover:shadow-sm';
+                
+                const textClass = isSelected ? 'text-indigo-900 font-semibold' : 'text-gray-600 font-medium';
+                
+                const indicatorClass = isSelected 
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent' 
+                    : 'bg-white border-gray-300 text-transparent';
+
+                return `
+                <button onclick="handleOptionSelect(${q.id}, ${idx}, '${q.type}')" 
+                    class="w-full text-left p-4 md:p-5 rounded-2xl border-2 transition-all duration-200 flex items-center group mb-3 ${containerClass}">
+                    <div class="w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center mr-4 border-2 transition-colors ${indicatorClass} ${q.type === 'single' ? 'rounded-full' : 'rounded-lg'}">
+                        <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                    </div>
+                    <span class="${textClass} text-base md:text-lg">${opt.text}</span>
+                </button>`;
+            }).join('');
+
+            app.innerHTML = `
+                <div class="animate-fade-in max-w-4xl mx-auto w-full flex-grow flex flex-col">
+                    <!-- Header Info -->
+                    <div class="flex justify-between items-center mb-6 px-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 text-white font-bold text-lg">
+                                ${state.student.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="text-white">
+                                <p class="text-xs opacity-80 uppercase tracking-wider font-semibold">Siswa</p>
+                                <p class="text-sm font-medium truncate max-w-[150px]">${state.student.name}</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2">
+                            <i data-lucide="target" class="w-4 h-4 text-purple-600"></i>
+                            <span class="text-sm font-bold text-purple-900">Soal ${state.qIndex + 1} <span class="text-gray-400 font-normal">/ ${QUESTIONS.length}</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Main Card -->
+                    <div class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl flex-grow flex flex-col relative overflow-hidden">
+                        <!-- Progress Bar Atas -->
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-gray-100">
+                            <div class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(168,85,247,0.5)]" style="width: ${progress}%"></div>
+                        </div>
+
+                        <div class="mb-6 mt-2">
+                            <div class="flex flex-wrap items-center gap-2 mb-4">
+                                <span class="px-3 py-1 text-xs font-bold rounded-lg uppercase tracking-wide ${q.type === 'complex' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">
+                                    ${q.type === 'complex' ? 'Pilihan Ganda Kompleks' : 'Pilihan Ganda Tunggal'}
+                                </span>
+                                <span class="px-3 py-1 text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200 rounded-lg uppercase tracking-wide">
+                                    ${q.category}
+                                </span>
+                            </div>
+
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 leading-snug">${q.question}</h3>
+                            ${q.type === 'complex' ? '<p class="text-sm text-purple-600 mt-2 font-medium flex items-center"><i data-lucide="info" class="w-4 h-4 mr-1"></i> Pilih lebih dari satu jawaban yang benar</p>' : ''}
+                        </div>
+
+                        <div class="flex-grow space-y-3">
+                            ${optionsHtml}
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+                            <button onclick="changeQuestion(-1)" ${state.qIndex === 0 ? 'disabled class="opacity-0 pointer-events-none"' : 'class="group flex items-center px-5 py-3 rounded-xl text-gray-500 font-semibold hover:bg-gray-100 transition-colors"'} >
+                                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i data-lucide="chevron-left" class="w-5 h-5 text-gray-600"></i>
+                                </div>
+                                Sebelumnya
+                            </button>
+
+                            ${state.qIndex === QUESTIONS.length - 1 
+                                ? `<button onclick="finishQuiz()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-green-500/40 hover:-translate-y-1 transition-all flex items-center">
+                                    Selesai & Cek Skor <i data-lucide="check-circle" class="w-5 h-5 ml-2"></i>
+                                   </button>`
+                                : `<button onclick="changeQuestion(1)" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center group">
+                                    Selanjutnya
+                                    <div class="ml-3 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </div>
+                                   </button>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleOptionSelect(qId, optIdx, type) {
+            let current = state.answers[qId] || [];
+            if (type === 'single') {
+                state.answers[qId] = [optIdx];
+            } else {
+                if (current.includes(optIdx)) {
+                    state.answers[qId] = current.filter(i => i !== optIdx);
+                } else {
+                    state.answers[qId] = [...current, optIdx];
+                }
+            }
+            renderQuiz(); 
+            lucide.createIcons();
+        }
+
+        function changeQuestion(delta) {
+            const newIndex = state.qIndex + delta;
+            if (newIndex >= 0 && newIndex < QUESTIONS.length) {
+                state.qIndex = newIndex;
+                renderQuiz();
+                lucide.createIcons();
+            }
+        }
+
+        function finishQuiz() {
+            state.view = 'result';
+            render();
+        }
+
+        // 3. TAMPILAN HASIL (EYE-CATCHING)
+        function renderResult() {
+            // Logic Kalkulasi (Sama seperti sebelumnya)
+            let totalScore = 0;
+            let catScores = {};
+
+            QUESTIONS.forEach(q => {
+                if (!catScores[q.category]) catScores[q.category] = { correct: 0, total: 0 };
+                catScores[q.category].total++;
+
+                const userAns = state.answers[q.id] || [];
+                let isCorrect = false;
+
+                if (q.type === 'single') {
+                    if (userAns.length > 0 && q.options[userAns[0]].isCorrect) isCorrect = true;
+                } else {
+                    const correctIndices = q.options.map((o, i) => o.isCorrect ? i : -1).filter(i => i !== -1);
+                    const sortedUser = [...userAns].sort();
+                    const allCorrect = correctIndices.every(i => sortedUser.includes(i));
+                    const noWrong = sortedUser.every(i => correctIndices.includes(i));
+                    if (allCorrect && noWrong && correctIndices.length === sortedUser.length) isCorrect = true;
+                }
+
+                if (isCorrect) {
+                    totalScore++;
+                    catScores[q.category].correct++;
+                }
+            });
+
+            const percent = Math.round((totalScore / QUESTIONS.length) * 100);
+            
+            // Generate List
+            let strengths = [], weaknesses = [];
+            for (let cat in catScores) {
+                const s = catScores[cat];
+                const p = Math.round((s.correct / s.total) * 100);
+                const text = `<span class="font-medium">${cat}</span> <span class="opacity-70 text-xs ml-1">(${p}%)</span>`;
+                if (p >= 70) strengths.push(text);
+                else weaknesses.push(text);
+            }
+
+            const strengthHtml = strengths.length 
+                ? `<ul class="space-y-2 mt-3">${strengths.map(s => `<li class="flex items-start text-sm text-gray-700"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5"></i> ${s}</li>`).join('')}</ul>` 
+                : '<p class="text-sm italic text-gray-500 mt-2">Terus berlatih ya!</p>';
+            
+            const weaknessHtml = weaknesses.length 
+                ? `<ul class="space-y-2 mt-3">${weaknesses.map(w => `<li class="flex items-start text-sm text-gray-700"><i data-lucide="arrow-up-circle" class="w-4 h-4 text-orange-500 mr-2 mt-0.5"></i> ${w}</li>`).join('')}</ul>` 
+                : '<p class="text-sm italic text-gray-500 mt-2">Kerja bagus, pertahankan!</p>';
+
+            // Render
+            app.innerHTML = `
+                <div class="animate-fade-in w-full max-w-2xl">
+                    <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
+                        <!-- Header Hasil -->
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white text-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                            
+                            <h2 class="text-2xl font-bold mb-1 relative z-10">Laporan Hasil Evaluasi</h2>
+                            <div class="flex items-center justify-center gap-2 text-indigo-100 text-sm relative z-10">
+                                <span class="bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">${state.student.name}</span>
+                                <span class="bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">${state.student.class}</span>
+                            </div>
+
+                            <div class="mt-8 mb-4 relative z-10 flex justify-center">
+                                <div class="relative w-40 h-40">
+                                    <!-- Lingkaran Luar -->
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" class="text-white/20" />
+                                        <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" 
+                                            stroke-dasharray="440" stroke-dashoffset="${440 - (440 * percent / 100)}" 
+                                            class="text-white transition-all duration-1000 ease-out" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-5xl font-bold">${percent}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-lg font-medium text-indigo-100">Skor Benar: ${totalScore} dari ${QUESTIONS.length}</p>
+                        </div>
+                        
+                        <!-- Body Hasil -->
+                        <div class="p-8 bg-white/60">
+                            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                                <div class="bg-green-50/80 p-5 rounded-2xl border border-green-100 shadow-sm">
+                                    <div class="flex items-center mb-1 text-green-700 font-bold">
+                                        <div class="p-1.5 bg-green-200 rounded-lg mr-2"><i data-lucide="award" class="w-5 h-5"></i></div>
+                                        Perlu Dipertahankan
+                                    </div>
+                                    ${strengthHtml}
+                                </div>
+                                <div class="bg-orange-50/80 p-5 rounded-2xl border border-orange-100 shadow-sm">
+                                    <div class="flex items-center mb-1 text-orange-700 font-bold">
+                                        <div class="p-1.5 bg-orange-200 rounded-lg mr-2"><i data-lucide="zap" class="w-5 h-5"></i></div>
+                                        Perlu Diperkuat
+                                    </div>
+                                    ${weaknessHtml}
+                                </div>
+                            </div>
+
+                            <button onclick="resetApp()" class="w-full py-4 bg-gray-900 text-white font-bold rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all group">
+                                <i data-lucide="rotate-ccw" class="w-5 h-5 mr-2 group-hover:-rotate-180 transition-transform duration-500"></i> Kerjakan Ulang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetApp() {
+            state.view = 'registration';
+            state.student = { name: '', class: '', email: '' };
+            state.qIndex = 0;
+            state.answers = {};
+            render();
+        }
+
+        // Init First Render
+        render();
+
+    </script>
+</body>
+</html>
